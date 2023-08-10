@@ -31,7 +31,7 @@ class BlockAddToCartByCountry
         // Magic function to get the 'excluded_countries' custom attribute
         $excluded_countries = $item->getProduct()->getExcludedCountries();
         // If no excluded_countries present on product, don't waste time fetching the user's country
-        if (empty($excluded_countries))
+        if (empty($excluded_countries) || count($excluded_countries) < 1)
             return $proceed($item);
 
         $user_country = $this->ip2Country->getCurrentCountryCode();
@@ -39,8 +39,6 @@ class BlockAddToCartByCountry
         if (empty($user_country))
             return $proceed($item);
 
-        // Neaten the user input of excluded countries to an uppercase array
-        $excluded_countries = array_map('trim', explode(',', strtoupper($excluded_countries)));
         if (in_array(strtoupper($user_country['code']), $excluded_countries)) {
             //Excluded
             $warning_msg = $this->scopeConfig->getValue("catalog/country_exclusions/warning_message");
