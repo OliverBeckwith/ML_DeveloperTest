@@ -28,20 +28,23 @@ class Ip2Country
         return $this::IP2COUNTRY_BASE_URL . "$ip";
     }
 
-    protected function parseResponse(string $body): ?string
+    protected function parseResponse(string $body): ?array
     {
         // Output structure is consistent from ip2c: https://about.ip2c.org/#outputs
-        [$success, $two_letter_code] = explode(";", $body);
+        [$success, $two_letter_code,, $country_name] = explode(";", $body);
         if ($success !== "1") {
             return null;
         }
-        return $two_letter_code;
+        return [
+            'code' => $two_letter_code,
+            'name' => $country_name,
+        ];
     }
 
     /**
      * Get the 2 character ISO-3166 country code for the current user
      */
-    public function getCurrentCountryCode(): ?string
+    public function getCurrentCountryCode(): ?array
     {
         $ip = $this->remoteAddress->getRemoteAddress();
         return $this->getCountryCode($ip);
@@ -50,7 +53,7 @@ class Ip2Country
     /**
      * Get the 2 character ISO-3166 country code for the specified IP
      */
-    public function getCountryCode(string $ip): ?string
+    public function getCountryCode(string $ip): ?array
     {
         try {
             $this->curlClient->get($this->constructRequestUrl($ip));
