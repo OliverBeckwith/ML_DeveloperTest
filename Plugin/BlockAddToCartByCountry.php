@@ -2,17 +2,21 @@
 
 namespace ML\DeveloperTest\Plugin;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\LocalizedException;
 use ML\DeveloperTest\Helper\Ip2Country;
 
 class BlockAddToCartByCountry
 {
     private Ip2Country $ip2Country;
+    private ScopeConfigInterface $scopeConfig;
 
     public function __construct(
         Ip2Country $ip2Country,
+        ScopeConfigInterface $scopeConfig,
     ) {
         $this->ip2Country = $ip2Country;
+        $this->scopeConfig = $scopeConfig;
     }
 
     public function aroundAddItem(
@@ -20,6 +24,10 @@ class BlockAddToCartByCountry
         callable $proceed,
         \Magento\Quote\Model\Quote\Item $item
     ) {
+        $enabled = (bool) $this->scopeConfig->getValue("catalog/country_exclusions/enable");
+        if (!$enabled)
+            return $proceed($item);
+
         // Magic function to get the 'excluded_countries' custom attribute
         $excluded_countries = $item->getProduct()->getExcludedCountries();
         // If no excluded_countries present on product, don't waste time fetching the user's country
@@ -35,7 +43,9 @@ class BlockAddToCartByCountry
         $excluded_countries = array_map('trim', explode(',', strtoupper($excluded_countries)));
         if (in_array(strtoupper($user_country['code']), $excluded_countries)) {
             //Excluded
-            throw new LocalizedException(__("User country excluded from product. Not adding to cart"));
+            $warning_msg = $this->scopeConfig->getValue("catalog/country_exclusions/warning_message");
+            $warning_msg = str_replace("COUNTRY_NAME", $user_country['name'], $warning_msg);
+            throw new LocalizedException(__($warning_msg));
         }
         return $proceed($item);
     }

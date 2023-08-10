@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+	<default>
+		<catalog>
+			<country_exclusions>
+				<enable>1</enable>
+				<warning_message>I’m sorry, this product cannot be ordered from COUNTRY_NAME</warning_message>
+			</country_exclusions>
+		</catalog>
+	</default>
+</config>

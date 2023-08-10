@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+	<system>
+		<section id="catalog">
+			<group id="country_exclusions" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+				<label>Country Exclusions</label>
+				<field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Enable</label>
+					<comment>Enable to restrict products by the user's country. This will prevent adding to cart</comment>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="warning_message" translate="label" type="textarea" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Warning Message</label>
+					<comment>This message will display on the frontend when a product is excluded from the user's country. Use "COUNTRY_NAME" as a placeholder for the real country name</comment>
+				</field>
+			</group>
+		</section>
+	</system>
+</config>
